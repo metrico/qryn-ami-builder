@@ -55,7 +55,7 @@ endpoint_tag = "homer"
 [sinks.prom_write]
 type = "prometheus_remote_write"
 inputs = [ "homer_scrape" ]
-endpoint = "${QRYN_SERVER}/prom/remote/write"
+endpoint = "${QRYN_SERVER}/api/prom/remote/write"
 
 [sinks.prom_write.auth]
 strategy="basic"
