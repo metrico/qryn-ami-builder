@@ -1,0 +1,10 @@
+[Service]
+ExecStart=/usr/bin/qryn
+Restart=always
+SyslogIdentifier=qryn
+User=qryn
+Group=nogroup
+EnvironmentFile=/etc/default/qryn
+
+[Install]
+WantedBy=multi-user.target

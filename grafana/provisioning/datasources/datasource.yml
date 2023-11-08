@@ -1,0 +1,81 @@
+# config file version
+apiVersion: 1
+
+deleteDatasources:
+  - name: Loki
+    orgId: 1
+  - name: Tempo
+    orgId: 1
+  - name: Prometheus
+    orgId: 1
+
+datasources:
+  - name: Loki
+    type: loki
+    access: proxy
+    uid: loki
+    url: http://127.0.0.1:3100
+    editable: true
+    basicAuth: true
+    basicAuthUser: $QRYN_USER
+    jsonData:
+      derivedFields:
+        - datasourceUid: tempo
+          matcherRegex: "^.*?traceI[dD]=(\\w+).*$"
+          name: traceId
+          url: '$${__value.raw}'
+        - datasourceUid: tempo
+          matcherRegex: "^.*?\"traceID\":\"(\\w+)\".*$"
+          name: traceID
+          url: '$${__value.raw}'
+        - name: callid
+          matcherRegex: ".*?[cC]all-ID:\\s?(.*)(?:\r|\n|\r\n)"
+          url: '/d/homer10/call-flow?var-search=$${__value.raw}'
+          urlDisplayLabel: 'Call Flow'
+        - name: correlationId 
+          matcherRegex: ".*?[pP]-[cC]harging-[vV]ector:\\s?.*icid-value=\"?(.*?)(?:\"|;|\r|\n|\r\n)"
+          url: '/d/homer10/call-flow?var-search=$${__value.raw}'
+          urlDisplayLabel: 'Call Flow'
+    secureJsonData:
+      basicAuthPassword: $QRYN_PASSWORD
+  - name: Tempo
+    type: tempo
+    access: proxy
+    uid: tempo
+    url: http://127.0.0.1:3100
+    basicAuth: true
+    basicAuthUser: $QRYN_USER
+    editable: true
+    jsonData:
+      nodeGraph:
+        enabled: true
+      tracesToLogs:
+        datasourceUid: loki
+        filterByTraceID: false
+        spanEndTimeShift: "2000ms"
+        spanStartTimeShift: "-2000ms"
+        tags: ['job']
+      tracesToMetrics:
+        datasourceUid: prometheus
+        tags: ['job']
+      serviceMap:
+        datasourceUid: prometheus
+      lokiSearch:
+        datasourceUid: loki
+    secureJsonData:
+      basicAuthPassword: $QRYN_PASSWORD
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    uid: prometheus
+    url: http://$QRYN_USER:$QRYN_PASSWORD@127.0.0.1:3100
+    editable: true
+    basicAuth: true
+    basicAuthUser: $QRYN_USER
+    jsonData:
+      httpMethod: GET
+      graphiteVersion: "1.1"
+      tlsAuth: false
+      tlsAuthWithCACert: false
+    secureJsonData:
+      basicAuthPassword: $QRYN_PASSWORD
