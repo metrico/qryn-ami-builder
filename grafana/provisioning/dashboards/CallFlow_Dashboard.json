@@ -356,7 +356,7 @@
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "sum by (type, response) (count_over_time({job=\"heplify-server\", response=~\"$method\", src_ip=~\"$src_ip\", dst_ip=~\"$dst_ip\"} |~ `$search` [$__interval]))\n",
+          "expr": "sum by (type, response) (count_over_time({job=\"heplify-server\", response=~\"$method\", src_ip=~\"$src_ip\", dst_ip=~\"$dst_ip\"} |~ `${search:raw}` [$__interval]))\n",
           "key": "Q-c40f2e2b-564b-49f7-affa-cdeff6d70adf-0",
           "queryType": "range",
           "refId": "A"

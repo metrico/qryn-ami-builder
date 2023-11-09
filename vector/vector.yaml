@@ -1,0 +1,55 @@
+#                                    __   __  __
+#                                    \ \ / / / /
+#                                     \ V / / /
+#                                      \_/  \/
+#
+#                                    V E C T O R
+#                                   Configuration
+#
+# ------------------------------------------------------------------------------
+# Website: https://vector.dev
+# Docs: https://vector.dev/docs
+# Chat: https://chat.vector.dev
+# ------------------------------------------------------------------------------
+
+# Change this to use a non-default directory for Vector data storage:
+# data_dir = "/var/lib/vector"
+
+sources:
+    my_journald_source:
+        type: "journald"
+    homer_scrape:
+      type: "prometheus_scrape"
+      endpoints:
+          -  "http://localhost:9096/metrics" 
+      scrape_interval_secs: 10
+      instance_tag: "heplify"
+      endpoint_tag: "homer"
+
+sinks:
+    qryn:
+        type: "loki"
+        inputs:
+            - "my_journald_source"
+        endpoint: "${QRYN_SERVER}"
+        compression: "none"
+        out_of_order_action: "accept"
+        auth:
+            strategy: "basic"
+            user: "${QRYN_USER}"
+            password: "${QRYN_PASSWORD}"
+        labels:
+            forwarder: "vector"
+            event: "{{ SYSLOG_IDENTIFIER }}"
+            type: "syslog"
+        encoding:
+            codec: "json"
+    prom_write:
+        type: "prometheus_remote_write"
+        inputs: 
+            - "homer_scrape"
+        endpoint: "${QRYN_SERVER}/prom/remote/write"
+        auth:
+            strategy: "basic"
+            user: "${QRYN_USER}"
+            password: "${QRYN_PASSWORD}"

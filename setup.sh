@@ -9,7 +9,7 @@ echo "deb [signed-by=/usr/share/keyrings/timber-vector-archive-keyring.gpg] http
 echo "deb-src [signed-by=/usr/share/keyrings/timber-vector-archive-keyring.gpg] https://repositories.timber.io/public/vector/deb/debian bookworm main" >> /etc/apt/sources.list.d/timber-vector.list
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get install -qq --assume-yes vector
-mv /tmp/vector/vector.toml /etc/vector/
+mv /tmp/vector/vector.yaml /etc/vector/
 
 #### INSTALL OF HOMER SERVER
 DEBIAN_FRONTEND=noninteractive apt-get install -qq --assume-yes libluajit-5.1-common libluajit-5.1-dev lsb-release wget curl git wget
